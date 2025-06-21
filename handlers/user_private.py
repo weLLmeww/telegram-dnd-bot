@@ -5,15 +5,14 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 from ai import handle_message
-
-
+from keyboards import reply_keyboard
 user_private_router = Router()
 
 
 @user_private_router.message(CommandStart())
 async def start_cmd(message: types.Message):
     print("поступила команда старт")
-    await message.answer("Это команда старт")
+    await message.answer("Это команда старт", reply_markup=reply_keyboard.start_kb)   
 
 @user_private_router.message()
 async def user_answer(message: types.Message):
