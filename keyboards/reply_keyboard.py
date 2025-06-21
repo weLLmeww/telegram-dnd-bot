@@ -1,6 +1,12 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 
+admin_kb = ReplyKeyboardMarkup(
+    keyboard = [
+        [KeyboardButton(text="admin")]
+    ]
+)
+
 
 start_kb = ReplyKeyboardMarkup(
     keyboard = [

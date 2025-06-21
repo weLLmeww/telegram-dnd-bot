@@ -6,8 +6,8 @@ from aiogram import Bot, Dispatcher, types
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-from handlers.user_private import user_private_router
-from handlers.admin_private import admin_private_router
+from handlers.user_router import user_router
+from handlers.admin_router import admin_router
 from common.bot_commands_list import private
 
 ALLOWED_UPDATES = ['message']
@@ -15,7 +15,7 @@ ALLOWED_UPDATES = ['message']
 bot = Bot(token=os.getenv('TOKEN'))
 
 dp = Dispatcher()
-dp.include_routers(user_private_router, admin_private_router)
+dp.include_routers(user_router, admin_router)
 
 
 async def main():
