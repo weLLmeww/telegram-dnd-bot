@@ -17,7 +17,7 @@ legend = os.getenv('LEGEND')
 def handle_message(message: types.Message):
     print(f"принято сообщение {message.text}...")
     response = client.chat.completions.create(
-        model="deepseek-ai/DeepSeek-R1-0528",
+        model="deeпше зpseek-ai/DeepSeek-R1-0528",
         messages=[
             {"role": "system", "content": legend},
             {"role": "user", "content": message.text},
