@@ -3,7 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from keyboards import reply_keyboard
+from keyboards.reply_keyboard import fsm_kb
 user_router = Router()
 
 
@@ -15,14 +15,15 @@ class SetCampaign(StatesGroup):
     wishes = State()
 
     texts = {
-        'SetCampaign.setting': 'опиши мир заново',
-        'SetCampaign.class_and_race': 'выбери класс и расу заново',
-        'SetCampaign.story': 'расскажи предысторию заново',
-        'SetCampaign.wishes': 'пожелания?',
+        'SetCampaign:setting': 'Опиши мир заново',
+        'SetCampaign:class_and_race': 'Выбери класс и расу заново',
+        'SetCampaign:story': 'Расскажи предысторию заново',
+        'SetCampaign:wishes': 'Пожелания?',
     }
 
 
-@user_router.message(StateFilter('*'), Command("cancel"), F.text.lower() == "отмена")
+@user_router.message(StateFilter('*'), Command("cancel"))
+@user_router.message(F.text.lower() == "отменить")
 async def cancel_hadler(message: types.Message, state: FSMContext) -> None:
 
     current_state = await state.get_state()
@@ -30,10 +31,11 @@ async def cancel_hadler(message: types.Message, state: FSMContext) -> None:
         return
 
     await state.clear()
-    await message.answer("действия отменены")
+    await message.answer("действия отменены", reply_markup=fsm_kb)
 
 
-@user_router.message(StateFilter('*'), Command("back"), F.text.lower() == "назад")
+@user_router.message(StateFilter('*'), Command("back"))
+@user_router.message(F.text.lower() == "назад")
 async def back_handler(message: types.Message, state: FSMContext):
 
     current_state = await state.get_state()
@@ -44,8 +46,8 @@ async def back_handler(message: types.Message, state: FSMContext):
     previous = None
     for step in SetCampaign.__all_states__:
         if step.state == current_state:
-            await state.set_state(previous.state)
-            await message.answer(f"Вы вернулись к предыдущему шагу. \n {SetCampaign.texts[previous.state]}")
+            await state.set_state(previous)
+            await message.answer(f"Вы вернулись к предыдущему шагу. \n{SetCampaign.texts[previous.state]}")
 
         previous = step
     
@@ -53,8 +55,8 @@ async def back_handler(message: types.Message, state: FSMContext):
 
 @user_router.message(StateFilter(None), Command("campaign"))
 async def start_cmd(message: types.Message, state: FSMContext):
-    print("поступила команда старт")
-    await message.answer("привет бла бла бла, расскажи про мир")
+    print("поступила команда старта компании")
+    await message.answer("привет бла бла бла, расскажи про мир", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.setting)
 
 
@@ -62,7 +64,7 @@ async def start_cmd(message: types.Message, state: FSMContext):
 async def set_setting(message: types.Message, state: FSMContext):
     print(f"поступило сообщение {message.text}")
     await state.update_data(setting = message.text)
-    await message.answer("теперь выбери класс и расу")
+    await message.answer("теперь выбери класс и расу", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.class_and_race)
 
 
@@ -70,7 +72,7 @@ async def set_setting(message: types.Message, state: FSMContext):
 async def set_class_and_race(message: types.Message, state: FSMContext):
     print(f"поступило сообщение {message.text}")
     await state.update_data(class_and_race = message.text)
-    await message.answer("теперь выбери предысторию")
+    await message.answer("теперь выбери предысторию", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.story)
 
 
@@ -78,7 +80,7 @@ async def set_class_and_race(message: types.Message, state: FSMContext):
 async def set_story(message: types.Message, state: FSMContext):
     print(f"поступило сообщение {message.text}")
     await state.update_data(story = message.text)
-    await message.answer("пожелания?")
+    await message.answer("пожелания?", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.wishes)
 
 

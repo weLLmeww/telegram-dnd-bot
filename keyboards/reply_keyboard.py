@@ -1,12 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 
-admin_kb = ReplyKeyboardMarkup(
-    keyboard = [
-        [KeyboardButton(text="admin")]
-    ]
-)
-
 
 start_kb = ReplyKeyboardMarkup(
     keyboard = [
@@ -26,10 +20,12 @@ start_kb = ReplyKeyboardMarkup(
 fsm_kb = ReplyKeyboardMarkup(
     keyboard = [
         [
-            KeyboardButton(text="cancel"),
-            KeyboardButton(text="back")
+            KeyboardButton(text="отменить"),
+            KeyboardButton(text="назад")
         ]
-    ]
+    ],
+    resize_keyboard = True,
+    input_field_placeholder = "Введи параметры кампании..."
 )
 
 del_kb = ReplyKeyboardRemove()
