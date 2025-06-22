@@ -1,5 +1,5 @@
 from aiogram import types, Router, F
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
@@ -14,8 +14,44 @@ class SetCampaign(StatesGroup):
     story = State()
     wishes = State()
 
+    texts = {
+        'SetCampaign.setting': 'опиши мир заново',
+        'SetCampaign.class_and_race': 'выбери класс и расу заново',
+        'SetCampaign.story': 'расскажи предысторию заново',
+        'SetCampaign.wishes': 'пожелания?',
+    }
 
-@user_router.message(StateFilter(None), CommandStart())
+
+@user_router.message(StateFilter('*'), Command("cancel"), F.text.lower() == "отмена")
+async def cancel_hadler(message: types.Message, state: FSMContext) -> None:
+
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+
+    await state.clear()
+    await message.answer("действия отменены")
+
+
+@user_router.message(StateFilter('*'), Command("back"), F.text.lower() == "назад")
+async def back_handler(message: types.Message, state: FSMContext):
+
+    current_state = await state.get_state()
+
+    if current_state == SetCampaign.setting:
+        await message.answer("Предыдущего шага нет, опишите сеттинг или введите \"отмена\"")
+
+    previous = None
+    for step in SetCampaign.__all_states__:
+        if step.state == current_state:
+            await state.set_state(previous.state)
+            await message.answer(f"Вы вернулись к предыдущему шагу. \n {SetCampaign.texts[previous.state]}")
+
+        previous = step
+    
+
+
+@user_router.message(StateFilter(None), Command("campaign"))
 async def start_cmd(message: types.Message, state: FSMContext):
     print("поступила команда старт")
     await message.answer("привет бла бла бла, расскажи про мир")

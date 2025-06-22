@@ -23,4 +23,13 @@ start_kb = ReplyKeyboardMarkup(
     input_field_placeholder = "Что интересует?"
 )
 
+fsm_kb = ReplyKeyboardMarkup(
+    keyboard = [
+        [
+            KeyboardButton(text="cancel"),
+            KeyboardButton(text="back")
+        ]
+    ]
+)
+
 del_kb = ReplyKeyboardRemove()

@@ -8,7 +8,6 @@ load_dotenv(find_dotenv())
 
 
 from handlers.user_router import user_router
-from handlers.admin_router import admin_router
 from common.bot_commands_list import private
 
 ALLOWED_UPDATES = ['message']
@@ -17,7 +16,7 @@ bot = Bot(token=os.getenv('TOKEN'))
 legend = os.getenv('LEGEND')
 
 dp = Dispatcher()
-dp.include_routers(user_router, admin_router)
+dp.include_routers(user_router)
 
 
 async def main():
