@@ -1,8 +1,7 @@
 import os
 import openai
 
-from aiogram import types, Router
-from aiogram.filters import CommandStart
+from aiogram import types
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -12,7 +11,9 @@ client = openai.OpenAI(
     base_url = "https://api.intelligence.io.solutions/api/v1/"
 )
 
-def handle_message(user_message: types.Message = "", system_message: str = ""):
+legend = os.getenv('LEGEND')
+
+def handle_message(user_message: types.Message, system_message: str):
     print(f"принято сообщение {user_message.text}...")
     response = client.chat.completions.create(
         model="deepseek-ai/DeepSeek-R1-0528",
