@@ -12,15 +12,13 @@ client = openai.OpenAI(
     base_url = "https://api.intelligence.io.solutions/api/v1/"
 )
 
-legend = os.getenv('LEGEND')
-
-def handle_message(message: types.Message):
-    print(f"принято сообщение {message.text}...")
+def handle_message(user_message: types.Message = "", system_message: str = ""):
+    print(f"принято сообщение {user_message.text}...")
     response = client.chat.completions.create(
-        model="deeпше зpseek-ai/DeepSeek-R1-0528",
+        model="deepseek-ai/DeepSeek-R1-0528",
         messages=[
-            {"role": "system", "content": legend},
-            {"role": "user", "content": message.text},
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": user_message.text},
         ],
         temperature=0.7,
         stream=False,
