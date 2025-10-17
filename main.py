@@ -2,6 +2,7 @@ import os
 import asyncio
 
 from aiogram import Bot, Dispatcher, types
+from aiogram.client.bot import DefaultBotProperties
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
@@ -12,8 +13,7 @@ from common.bot_commands_list import private
 
 ALLOWED_UPDATES = ['message']
 
-bot = Bot(token=os.getenv('TOKEN'))
-legend = os.getenv('LEGEND')
+bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode="HTML"))
 
 dp = Dispatcher()
 dp.include_routers(user_router)

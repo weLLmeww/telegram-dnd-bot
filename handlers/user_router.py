@@ -3,6 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from ai import handle_message
 from keyboards.reply_keyboard import fsm_kb
 user_router = Router()
 
@@ -20,6 +21,7 @@ class SetCampaign(StatesGroup):
         'SetCampaign:story': 'Расскажи предысторию заново',
         'SetCampaign:wishes': 'Пожелания?',
     }
+
 
 
 @user_router.message(StateFilter('*'), Command("cancel"))
@@ -50,7 +52,6 @@ async def back_handler(message: types.Message, state: FSMContext):
             await message.answer(f"Вы вернулись к предыдущему шагу. \n{SetCampaign.texts[previous.state]}")
 
         previous = step
-    
 
 
 @user_router.message(StateFilter(None), Command("campaign"))
@@ -91,3 +92,9 @@ async def set_wishes(message: types.Message, state: FSMContext):
     data = await state.get_data()
     await message.answer(f"правильно? {data}")
     await state.clear()
+
+
+@user_router.message()
+async def bla(message: types.Message):
+    print(f"поступило сообщение {message.text}")
+    await message.answer(handle_message(message))
