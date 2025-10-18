@@ -4,14 +4,15 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.client.bot import DefaultBotProperties
 from loguru import logger
 
-from handlers.user_router import user_router
+from user_router import user_router
 from common.bot_commands_list import private
 
-from config import TOKEN
+from config import BOT_TOKEN
+
 
 ALLOWED_UPDATES = ['TOKEN']
 
-bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="Markdown"))
 
 dp = Dispatcher()
 dp.include_routers(user_router)

@@ -1,8 +1,9 @@
 import openai
 
-from aiogram import types
 from loguru import logger
+from typing import List, Tuple, Dict
 
+from database.db import get_history
 from config import model, io_API_key, SYSTEM_PROMT
 
 
@@ -11,28 +12,27 @@ client = openai.OpenAI(
     base_url = "https://api.intelligence.io.solutions/api/v1/"
 )
 
-
-def handle_message(user_message: types.Message):
-    logger.debug("Сообщение получено нейронкой")
-
-    chat_history = [{
-        "role": "system",
-        "content": SYSTEM_PROMT
-    }]   
+def build_messages(user_id: int) -> List[Dict[str, str]]:
     
-    chat_history.append({
-        "role": "user",
-        "content": user_message
-    })
-    logger.info("Сообщение добавлено в историю чата")
+    messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMT}]
+
+    history: List[Tuple[str, str]] = get_history(user_id)
+    for role, content in history:
+        messages.append({"role": role, "content": content})
+
+    return messages
+
+
+def handle_message(messages: List[Dict[str, str]]):
+    logger.debug("Обработка нейронкой...")
 
     response = client.chat.completions.create(
         model=model,
-        messages=chat_history,
+        messages=messages,
         temperature=0.7,
         stream=False,
     )
     ai_answer = response.choices[0].message.content
     
     logger.success("Ответ сгенерирован")
-    return ai_answer
+    return ai_answer.split("</think>")[1]
