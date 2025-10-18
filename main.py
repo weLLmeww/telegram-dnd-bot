@@ -1,19 +1,16 @@
-import os
 import asyncio
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.client.bot import DefaultBotProperties
 
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-
-
 from handlers.user_router import user_router
 from common.bot_commands_list import private
 
+from config import token
+
 ALLOWED_UPDATES = ['message']
 
-bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode="HTML"))
+bot = Bot(token=token, default=DefaultBotProperties(parse_mode="HTML"))
 
 dp = Dispatcher()
 dp.include_routers(user_router)
