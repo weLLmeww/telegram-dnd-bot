@@ -13,7 +13,6 @@ client = openai.OpenAI(
 )
 
 def build_messages(user_id: int) -> List[Dict[str, str]]:
-    
     messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMT}]
 
     history: List[Tuple[str, str]] = get_history(user_id)
@@ -35,4 +34,7 @@ def handle_message(messages: List[Dict[str, str]]):
     ai_answer = response.choices[0].message.content
     
     logger.success("Ответ сгенерирован")
-    return ai_answer.split("</think>")[1]
+    if "</think>" in ai_answer:
+        return ai_answer.split("</think>")[1]
+    else:
+        return ai_answer
