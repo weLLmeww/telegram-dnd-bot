@@ -3,7 +3,7 @@ import openai
 from loguru import logger
 from typing import List, Tuple, Dict
 
-from database.db import get_history
+from db import get_history
 from config import model, io_API_key, SYSTEM_PROMT
 
 
