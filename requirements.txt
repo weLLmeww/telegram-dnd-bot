@@ -1,4 +1,4 @@
 aigoram
 dotenv
 openai
-openai-agents
+loguru

@@ -1,8 +1,9 @@
 import openai
 
 from aiogram import types
+from loguru import logger
 
-from config import model, legend, io_API_key
+from config import model, promt, io_API_key
 
 
 client = openai.OpenAI(
@@ -12,17 +13,26 @@ client = openai.OpenAI(
 
 
 def handle_message(user_message: types.Message):
-    print(f"принято сообщение {user_message.text}...")
-    
-    completion = client.chat.completions.create(
+    logger.debug(f"Сообщение от пользователя: {user_message.text}")
+
+    chat_history = [{
+        "role": "system",
+        "content": promt
+    }]
+
+    chat_history.append({
+        "role": "user",
+        "content": user_message
+    })
+
+    response = client.chat.completions.create(
         model=model,
-        messages=[
-            {"role": "system", "content": legend},
-            {"role": "user", "content": user_message.text}
-        ],
+        messages=chat_history,
         temperature=0.7,
         stream=False,
     )
-    bot_answer = completion.choices[0].message.content
+    ai_answer = response.choices[0].message.content
     
-    return bot_answer
+    logger.debug(ai_answer)
+    
+    return ai_answer
