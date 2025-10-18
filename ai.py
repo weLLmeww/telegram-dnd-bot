@@ -3,7 +3,7 @@ import openai
 from aiogram import types
 from loguru import logger
 
-from config import model, promt, io_API_key
+from config import model, io_API_key, SYSTEM_PROMT
 
 
 client = openai.OpenAI(
@@ -13,17 +13,18 @@ client = openai.OpenAI(
 
 
 def handle_message(user_message: types.Message):
-    logger.debug(f"Сообщение от пользователя: {user_message.text}")
+    logger.debug("Сообщение получено нейронкой")
 
     chat_history = [{
         "role": "system",
-        "content": promt
-    }]
-
+        "content": SYSTEM_PROMT
+    }]   
+    
     chat_history.append({
         "role": "user",
         "content": user_message
     })
+    logger.info("Сообщение добавлено в историю чата")
 
     response = client.chat.completions.create(
         model=model,
@@ -33,6 +34,5 @@ def handle_message(user_message: types.Message):
     )
     ai_answer = response.choices[0].message.content
     
-    logger.debug(ai_answer)
-    
+    logger.success("Ответ сгенерирован")
     return ai_answer

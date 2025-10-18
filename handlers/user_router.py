@@ -2,6 +2,7 @@ from aiogram import types, Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from loguru import logger
 
 from ai import handle_message
 from keyboards.reply_keyboard import fsm_kb
@@ -56,14 +57,14 @@ async def back_handler(message: types.Message, state: FSMContext):
 
 @user_router.message(StateFilter(None), Command("campaign"))
 async def start_cmd(message: types.Message, state: FSMContext):
-    print("поступила команда старта компании")
-    await message.answer("привет бла бла бла, расскажи про мир", reply_markup=fsm_kb)
+    logger.debug("Поступила команда создания кампании")
+    await message.answer("Расскажи про мир", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.setting)
 
 
 @user_router.message(SetCampaign.setting, F.text)
 async def set_setting(message: types.Message, state: FSMContext):
-    print(f"поступило сообщение {message.text}")
+    logger.info(f"Сообщение от пользователя: {message.text}")
     await state.update_data(setting = message.text)
     await message.answer("теперь выбери класс и расу", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.class_and_race)
@@ -71,7 +72,7 @@ async def set_setting(message: types.Message, state: FSMContext):
 
 @user_router.message(SetCampaign.class_and_race, F.text)
 async def set_class_and_race(message: types.Message, state: FSMContext):
-    print(f"поступило сообщение {message.text}")
+    logger.info(f"Сообщение от пользователя: {message.text}")
     await state.update_data(class_and_race = message.text)
     await message.answer("теперь выбери предысторию", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.story)
@@ -79,7 +80,7 @@ async def set_class_and_race(message: types.Message, state: FSMContext):
 
 @user_router.message(SetCampaign.story, F.text)
 async def set_story(message: types.Message, state: FSMContext):
-    print(f"поступило сообщение {message.text}")
+    logger.info(f"Сообщение от пользователя: {message.text}")
     await state.update_data(story = message.text)
     await message.answer("пожелания?", reply_markup=fsm_kb)
     await state.set_state(SetCampaign.wishes)
@@ -87,7 +88,7 @@ async def set_story(message: types.Message, state: FSMContext):
 
 @user_router.message(SetCampaign.wishes, F.text)
 async def set_wishes(message: types.Message, state: FSMContext):
-    print(f"поступило сообщение {message.text}")
+    logger.info(f"Сообщение от пользователя: {message.text}")
     await state.update_data(wishes = message.text)
     data = await state.get_data()
     await message.answer(f"правильно? {data}")
@@ -95,6 +96,8 @@ async def set_wishes(message: types.Message, state: FSMContext):
 
 
 @user_router.message()
-async def bla(message: types.Message):
-    print(f"поступило сообщение {message.text}")
-    await message.answer(handle_message(message))
+async def answer(message: types.Message):
+    logger.info(f"Сообщение от пользователя: {message.text}")
+    ai_answer = handle_message(message.text)
+    await message.answer(ai_answer)
+    logger.success(f"Ответ отправлен")
