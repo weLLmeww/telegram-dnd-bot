@@ -1,14 +1,18 @@
-import sqlite3
+import aiosqlite
+
 from typing import List, Tuple
 from loguru import logger
 
+from config import BASE_DIR
 
-def init_db() -> None:
+DB_PATH = f"{BASE_DIR}\database\chat_history.db"
+
+
+async def init_db() -> None:
     logger.debug("Инициализация базы данных")
     try:
-        with sqlite3.connect("dialogues.db") as conn:
-            cr = conn.cursor()
-            cr.execute(
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute(
                 """
                 CREATE TABLE IF NOT EXISTS messages (
                     id      INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,32 +23,30 @@ def init_db() -> None:
                 )
                 """
             )
-            conn.commit()
+            await db.commit()
             logger.debug("База данных инициализирована успешно")
-    except sqlite3.Error as e:
+    except aiosqlite.Error as e:
         logger.error(f"Ошибка при инициализации базы данных: {e}")
     
 
-def add_message(user_id: int, role: str, content: str) -> None:
+async def add_message(user_id: int, role: str, content: str) -> None:
     logger.debug("Добавление сообщения в базу данных...")
     try:
-        with sqlite3.connect("dialogues.db") as conn:
-            cr = conn.cursor()
-            cr.execute(
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute(
                 "INSERT INTO messages (user_id, role, content) VALUES (?, ?, ?)", (user_id, role, content)
             )
-            conn.commit()
+            await db.commit()
             logger.info(f"Сообщение от '{role}' добавлено в базу данных")
-    except sqlite3.Error as e:
+    except aiosqlite.Error as e:
         logger.error(f"Ошибка при добавлении сообщения {e}")
 
 
-def get_history(user_id: int, limit: int = 10) -> List[Tuple[str, str]]:
+async def get_history(user_id: int, limit: int = 10) -> List[Tuple[str, str]]:
     logger.debug("Чтение истории сообщений...")
     try:
-        with sqlite3.connect("dialogues.db") as conn:
-            cr = conn.cursor()
-            cr.execute(
+        async with aiosqlite.connect(DB_PATH) as db:
+            cr = await db.execute(
                 """
                 SELECT role, content
                 FROM messages
@@ -54,25 +56,22 @@ def get_history(user_id: int, limit: int = 10) -> List[Tuple[str, str]]:
                 """,
                 (user_id, limit)
             )
-            rows = cr.fetchall()
+            rows = await cr.fetchall()
             logger.debug("История сообщений успешно прочитана")
             return [(role, content) for role, content in reversed(rows)]
         
-    except sqlite3.Error as e:
+    except aiosqlite.Error as e:
         logger.error(f"Ошибка при чтении истории: {e}")
     
 
-def clear_history(user_id: int) -> None:
+async def clear_history(user_id: int) -> None:
     logger.debug(f"Инициализация очистки истории пользователя {user_id}")
     try:
-        with sqlite3.connect("dialogues.db") as conn:
-            cr = conn.cursor()
-            cr.execute(
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute(
                 "DELETE FROM messages WHERE user_id = ?;", (user_id,)
             )
             logger.success("История пользователя очищена")
-            conn.commit()
-    except sqlite3.Error as e:
+            await db.commit()
+    except aiosqlite.Error as e:
         logger.error(f"Ошибка при очистке истории: {e}")
-
-init_db()

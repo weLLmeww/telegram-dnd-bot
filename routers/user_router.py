@@ -2,7 +2,7 @@ from aiogram import types, Router
 from aiogram.filters.command import Command
 from loguru import logger
 
-from db import add_message, clear_history
+from database.sqlite import add_message, clear_history
 from ai import build_messages, handle_message
 
 user_router = Router()
@@ -30,14 +30,14 @@ async def answer(message: types.Message) -> None:
         user_id = message.from_user.id
         user_text = message.text.strip()
 
-        add_message(user_id, role="user", content=user_text)
-        messages = build_messages(user_id)
+        await add_message(user_id, role="user", content=user_text)
+        messages = await build_messages(user_id)
 
-        answer = handle_message(messages)
+        answer = await handle_message(messages)
         
-        add_message(user_id, role="assistant", content=answer)
+        await add_message(user_id, role="assistant", content=answer)
         await message.answer(answer)
         logger.success(f"Ответ отправлен")
     except Exception as e:
         logger.error("Ошибка отправки сообщения")
-        message.answer("Все пошло по пизде")
+        await message.answer("Все пошло по пизде")

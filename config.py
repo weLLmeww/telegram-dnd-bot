@@ -1,9 +1,11 @@
 import os
 
+from pathlib import Path
 from loguru import logger
 from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 io_API_key = os.getenv('API_KEY')
@@ -11,8 +13,6 @@ model = os.getenv('MODEL')
 
 if not BOT_TOKEN or not io_API_key:
     logger.error("Не заданы BOT_TOKEN и/или OPENAI_API_KEY!")
-
-
 
 SYSTEM_PROMT = """ 
 

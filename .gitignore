@@ -2,3 +2,4 @@
 **/__pycache__
 .vscode/
 **/bot_venv
+database/chat_history.db

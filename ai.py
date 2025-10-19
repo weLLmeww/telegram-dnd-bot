@@ -1,23 +1,23 @@
-import openai
+from openai import AsyncOpenAI
 
 from loguru import logger
 from typing import List, Tuple, Dict
 
-from db import get_history
+from database.sqlite import get_history
 from config import model, io_API_key, SYSTEM_PROMT
 
 
-client = openai.OpenAI(
+client = AsyncOpenAI(
     api_key = io_API_key,
     base_url = "https://api.intelligence.io.solutions/api/v1/"
 )
 
-def build_messages(user_id: int) -> List[Dict[str, str]]:
+async def build_messages(user_id: int) -> List[Dict[str, str]]:
     logger.debug("Начало сборки запроса к нейросети...")
     try:
         messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMT}]
 
-        history: List[Tuple[str, str]] = get_history(user_id)
+        history: List[Tuple[str, str]] = await  get_history(user_id)
         for role, content in history:
             messages.append({"role": role, "content": content})
         logger.debug("Запрос к нейросети собран")
@@ -26,10 +26,10 @@ def build_messages(user_id: int) -> List[Dict[str, str]]:
         logger.error(f"Ошибка сборки запроса: {e}")
 
 
-def handle_message(messages: List[Dict[str, str]]):
+async def handle_message(messages: List[Dict[str, str]]):
     logger.debug("Обработка нейронкой...")
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
             messages=messages,
             temperature=0.7,
