@@ -13,28 +13,34 @@ client = openai.OpenAI(
 )
 
 def build_messages(user_id: int) -> List[Dict[str, str]]:
-    messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMT}]
+    logger.debug("Начало сборки запроса к нейросети...")
+    try:
+        messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMT}]
 
-    history: List[Tuple[str, str]] = get_history(user_id)
-    for role, content in history:
-        messages.append({"role": role, "content": content})
-
-    return messages
+        history: List[Tuple[str, str]] = get_history(user_id)
+        for role, content in history:
+            messages.append({"role": role, "content": content})
+        logger.debug("Запрос к нейросети собран")
+        return messages
+    except Exception as e:
+        logger.error(f"Ошибка сборки запроса: {e}")
 
 
 def handle_message(messages: List[Dict[str, str]]):
     logger.debug("Обработка нейронкой...")
-
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=0.7,
-        stream=False,
-    )
-    ai_answer = response.choices[0].message.content
-    
-    logger.success("Ответ сгенерирован")
-    if "</think>" in ai_answer:
-        return ai_answer.split("</think>")[1]
-    else:
-        return ai_answer
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.7,
+            stream=False,
+        )
+        ai_answer = response.choices[0].message.content
+        
+        logger.success("Ответ сгенерирован успешно")
+        if "</think>" in ai_answer:
+            return ai_answer.split("</think>")[1]
+        else:
+            return ai_answer
+    except Exception as e:
+        logger.error(f"Ошибка обработки сообщения: {e}")
