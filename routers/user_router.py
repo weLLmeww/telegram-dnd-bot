@@ -1,4 +1,4 @@
-from aiogram import types, Router
+from aiogram import types, Router, F
 from aiogram.filters.command import Command
 from loguru import logger
 
@@ -18,12 +18,12 @@ async def command_start(message: types.Message) -> None:
 @user_router.message(Command("reset"))
 async def command_history(message: types.Message) -> None:
     logger.info("Запрос на очистку истории сообщений")
-    clear_history(message.from_user.id)
+    await clear_history(message.from_user.id)
     await message.answer("История удалена.")
     logger.success("Команда сработала успешно")
     
 
-@user_router.message()
+@user_router.message(F.text)
 async def answer(message: types.Message) -> None:
     logger.info(f"Сообщение от пользователя: {message.text}")
     try:
@@ -41,3 +41,10 @@ async def answer(message: types.Message) -> None:
     except Exception as e:
         logger.error("Ошибка отправки сообщения")
         await message.answer("Все пошло по пизде")
+
+
+@user_router.message()
+async def answer(message: types.Message) -> None:
+    logger.info(f"Сообщение от пользователя: {message.text}")
+    await message.answer("Я умею работать только с текстом))0)")
+    logger.warning("Недопустимый тип ввода")
