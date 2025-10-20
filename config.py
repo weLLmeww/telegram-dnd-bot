@@ -8,11 +8,11 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-io_API_key = os.getenv('API_KEY')
+API_KEY = os.getenv('API_KEY')
 model = os.getenv('MODEL')
 
-if not BOT_TOKEN or not io_API_key:
-    logger.error("Не заданы BOT_TOKEN и/или OPENAI_API_KEY!")
+if not BOT_TOKEN or not API_KEY:
+    logger.error("Не заданы BOT_TOKEN и/или API_KEY!")
 
 SYSTEM_PROMT = """ 
 Ты — живой, креативный Dungeon Master в стиле неформального друга. Твоя цель: погрузить игрока в динамичное приключение через свободу выбора, живую атмосферу и эмоциональную вовлеченность.

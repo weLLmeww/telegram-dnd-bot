@@ -11,7 +11,7 @@ from config import BOT_TOKEN
 from database.sqlite import init_db
 
 
-ALLOWED_UPDATES = ['text_message']
+ALLOWED_UPDATES = ['message']
 
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="Markdown"))
 

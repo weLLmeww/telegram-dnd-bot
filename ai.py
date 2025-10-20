@@ -4,11 +4,11 @@ from loguru import logger
 from typing import List, Tuple, Dict
 
 from database.sqlite import get_history
-from config import model, io_API_key, SYSTEM_PROMT
+from config import model, API_KEY, SYSTEM_PROMT
 
 
 client = AsyncOpenAI(
-    api_key = io_API_key,
+    api_key = API_KEY,
     base_url = "https://api.intelligence.io.solutions/api/v1/"
 )
 
